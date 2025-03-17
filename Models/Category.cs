@@ -12,6 +12,6 @@ public class Category
     [StringLength(50)]
     public string Name { get; set; }
 
-    public ICollection<Post> Posts { get; set; }
+    public ICollection<Post>? Posts { get; set; } = new List<Post>();
 }
 

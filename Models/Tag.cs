@@ -12,6 +12,6 @@ public class Tag
     [StringLength(30)]
     public string Name { get; set; }
 
-    public ICollection<PostTag> PostTags { get; set; }
+    public ICollection<PostTag>? PostTags { get; set; } = new List<PostTag>();
 }
 

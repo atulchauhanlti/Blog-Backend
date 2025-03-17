@@ -17,6 +17,14 @@ public class User
     public string Email { get; set; }
 
     [Required]
+    [StringLength(100, MinimumLength = 2)]
+    public string FirstName { get; set; } // New field
+
+    [Required]
+    [StringLength(100, MinimumLength = 2)]
+    public string LastName { get; set; } // New field
+
+    [Required]
     public string PasswordHash { get; set; }
 
     [Required]

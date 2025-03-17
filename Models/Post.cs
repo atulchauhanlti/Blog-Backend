@@ -27,6 +27,12 @@ public class Post
     public int CategoryId { get; set; }
 
     public Category Category { get; set; }
+
+    // Add a unique slug for frontend references
+    [Required]
+    [StringLength(150)]
+    public string Slug { get; set; }
+
     public ICollection<PostTag> PostTags { get; set; }
     public ICollection<Comment> Comments { get; set; }
 }
