@@ -4,6 +4,7 @@ using System.Linq;
 using backend.Data;
 using backend.Interface;
 using backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repositories;
 
@@ -23,7 +24,7 @@ public class CategoryRepository : ICategoryRepository
 
     public Category GetCategoryById(int id)
     {
-        return _context.Categories.Find(id);
+        return _context.Categories.AsNoTracking().FirstOrDefault(c => c.Id == id);
     }
 
     public void AddCategory(Category category)

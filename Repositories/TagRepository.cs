@@ -4,6 +4,7 @@ using System.Linq;
 using backend.Data;
 using backend.Interface;
 using backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repositories;
 
@@ -23,7 +24,7 @@ public class TagRepository : ITagRepository
 
     public Tag GetTagById(int id)
     {
-        return _context.Tags.Find(id);
+        return _context.Tags.AsNoTracking().FirstOrDefault(c => c.Id == id);
     }
 
     public void AddTag(Tag tag)

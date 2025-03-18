@@ -50,21 +50,19 @@ namespace backend.Controllers
         }
 
         // PUT: api/categories/{id}
-        [HttpPut("{id}")]
+       [HttpPut("{id}")]
         public IActionResult UpdateCategory(int id, [FromBody] Category category)
         {
-            if (id != category.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingCategory = _categoryService.GetCategoryById(id);
+            var existingCategory = _categoryService.GetCategoryById(id); // This is already tracked by DbContext
             if (existingCategory == null)
             {
                 return NotFound();
             }
 
-            _categoryService.UpdateCategory(category);
+            // Update the tracked instance with new values
+            existingCategory.Name = category.Name;
+
+            _categoryService.UpdateCategory(existingCategory);
             return NoContent();
         }
 

@@ -51,30 +51,36 @@ public class PostService
 
         _postRepository.AddPost(post);
     }
-    public void UpdatePost(PostUpdateRequest request, string imageUrl = null)
+    public void UpdatePost(int id, PostUpdateRequest request, string imageUrl = null)
     {
-        var post = _postRepository.GetPostBySlug(CommandHelper.GenerateSlug(request.Title));
+        // Retrieve the post by its id
+        var post = _postRepository.GetPostById(id); // Use the id to fetch the post
         if (post == null) throw new Exception("Post not found!");
 
-        // Parse TagIds from comma-separated string
+        // Parse TagIds from a comma-separated string in the request
         var tagIdList = request.TagIds
                             .Split(',', StringSplitOptions.RemoveEmptyEntries)
                             .Select(int.Parse)
                             .ToList();
 
+        // Update post fields
         post.Title = request.Title;
         post.Content = request.Content;
         post.CategoryId = request.CategoryId;
 
         if (!string.IsNullOrEmpty(imageUrl))
         {
-            post.ImageUrl = imageUrl; // Update the image URL if provided
+            post.ImageUrl = imageUrl; // Update image URL if a new image is provided
         }
 
+        // Update post tags
         post.PostTags = tagIdList.Select(tagId => new PostTag { TagId = tagId, PostId = post.Id }).ToList();
 
+        // Save the changes via the repository
         _postRepository.UpdatePost(post);
     }
+
+
 
     public void DeletePost(int id)
     {
@@ -183,6 +189,7 @@ public class PostService
         return _postRepository.GetAllPosts()
                             .Select(post => new PostResponse
                             {
+                                Id = post.Id,
                                 Title = post.Title,
                                 Content = post.Content,
                                 PublishedAt = post.PublishedAt,

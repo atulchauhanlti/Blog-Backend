@@ -70,6 +70,11 @@ public class PostRepository : IPostRepository
         _context.SaveChanges();
     }
 
+    public Post GetPostById(int id)
+    {
+        return _context.Posts.Include(p => p.PostTags).FirstOrDefault(p => p.Id == id);
+    }
+
     public void UpdatePost(Post post)
     {
         _context.Posts.Update(post);

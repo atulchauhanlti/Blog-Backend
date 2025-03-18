@@ -49,10 +49,11 @@ namespace backend.Controllers
         }
 
         [Authorize]
-        [HttpPut("update/{slug}")]
-        public IActionResult UpdatePost(string slug, [FromForm] PostUpdateRequest request, [FromForm] IFormFile imageFile)
+        [HttpPut("update/{id}")]
+        public IActionResult UpdatePost(int id, [FromForm] PostUpdateRequest request, [FromForm] IFormFile? imageFile)
         {
             string imageUrl = null;
+
             if (imageFile != null && imageFile.Length > 0)
             {
                 // Save the new image file
@@ -64,9 +65,11 @@ namespace backend.Controllers
                 imageUrl = filePath; // Store the file path or convert it to a public URL
             }
 
-            _postService.UpdatePost(request, imageUrl);
+            _postService.UpdatePost(id, request, imageUrl); // Pass id, request, and image URL to service layer
             return NoContent();
         }
+
+
 
         [Authorize]
         [HttpDelete("{id}")]
