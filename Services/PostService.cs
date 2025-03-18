@@ -79,9 +79,6 @@ public class PostService
         // Save the changes via the repository
         _postRepository.UpdatePost(post);
     }
-
-
-
     public void DeletePost(int id)
     {
         _postRepository.DeletePost(id);
@@ -124,6 +121,31 @@ public class PostService
                 Content = c.Content,
                 Author = c.Author.Username
             }).ToList()
+        };
+    }
+
+    public PostResponse GetPostById(int id)
+    {
+        var post = _postRepository.GetPostById(id);
+        if (post == null)
+        {
+            throw new Exception($"Post with ID {id} not found.");
+        }
+
+        return new PostResponse
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Content = post.Content,
+            PublishedAt = post.PublishedAt,
+            Slug = post.Slug,
+            CategoryName = post.Category?.Name, // Handle null Category
+            Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>(), // Handle null Tags
+            Comments = post.Comments?.Select(c => new CommentResponse
+            {
+                Content = c.Content,
+                Author = c.Author?.Username // Handle null Author
+            }).ToList() ?? new List<CommentResponse>() // Handle null Comments
         };
     }
 

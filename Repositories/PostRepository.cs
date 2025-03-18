@@ -72,7 +72,13 @@ public class PostRepository : IPostRepository
 
     public Post GetPostById(int id)
     {
-        return _context.Posts.Include(p => p.PostTags).FirstOrDefault(p => p.Id == id);
+        var post = _context.Posts.FirstOrDefault(p => p.Id == id);
+        if (post == null)
+        {
+            Console.WriteLine($"Post with ID {id} not found.");
+            // Optionally log the error or return null (current behavior).
+        }
+        return post;
     }
 
     public void UpdatePost(Post post)

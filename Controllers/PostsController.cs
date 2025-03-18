@@ -70,7 +70,6 @@ namespace backend.Controllers
         }
 
 
-
         [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeletePost(int id)
@@ -78,6 +77,7 @@ namespace backend.Controllers
             _postService.DeletePost(id);
             return NoContent();
         }
+
 
         [HttpGet("category/{categoryId}")]
         public IActionResult GetPostsByCategory(int categoryId)
@@ -107,11 +107,25 @@ namespace backend.Controllers
             return Ok(posts);
         }
 
-        [HttpGet("{slug}")]
-        public IActionResult GetPostBySlug(string slug)
+        // [HttpGet("{slug}")]
+        // public IActionResult GetPostBySlug(string slug)
+        // {
+        //     var post = _postService.GetPostBySlug(slug);
+        //     return Ok(post);
+        // }
+
+        [HttpGet("{id}")]
+        public IActionResult GetPostById(int id)
         {
-            var post = _postService.GetPostBySlug(slug);
-            return Ok(post);
+            try
+            {
+                var post = _postService.GetPostById(id);
+                return Ok(post);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { Message = ex.Message }); // Return a 404 with an error message
+            }
         }
 
         [HttpGet("all")]
