@@ -20,5 +20,5 @@ public class PostUpdateRequest
     public int CategoryId { get; set; }
 
     [Required]
-    public List<int> TagIds { get; set; }
+    public string TagIds { get; set; }
 }

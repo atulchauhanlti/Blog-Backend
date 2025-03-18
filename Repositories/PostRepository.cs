@@ -55,6 +55,15 @@ public class PostRepository : IPostRepository
                        .ToList();
     }
 
+    public IEnumerable<Post> GetAllPosts()
+    {
+        return _context.Posts
+                    .Include(p => p.Category)
+                    .Include(p => p.PostTags).ThenInclude(pt => pt.Tag)
+                    .Include(p => p.Comments)
+                    .ToList();
+    }
+
     public void AddPost(Post post)
     {
         _context.Posts.Add(post);

@@ -21,18 +21,20 @@ public class PostService
          _tagRepository = tagRepository;
     }
 
-    public void AddPost(PostCreateRequest request, int userId)
+    public void AddPost(PostCreateRequest request, int userId, string imageUrl)
     {
         // Validate CategoryId
         var category = _categoryRepository.GetCategoryById(request.CategoryId);
         if (category == null) throw new Exception("Category does not exist.");
 
-        // Validate TagIds
-        // var tags = _tagRepository.GetTagsByIds(request.TagIds);
-        // if (tags.Count != request.TagIds.Count)
-        // {
-        //     throw new Exception("One or more tags do not exist.");
-        // }
+        // Parse TagIds from comma-separated string
+        var tagIdList = request.TagIds
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(int.Parse)
+                            .ToList();
+
+        // Validate TagIds (Optional: Check if these tag IDs exist in the database)
+        // var tags = _tagRepository.GetTagsByIds(tagIdList);
 
         // Create the Post
         var post = new Post
@@ -43,21 +45,33 @@ public class PostService
             UserId = userId,
             CategoryId = request.CategoryId,
             Slug = CommandHelper.GenerateSlug(request.Title),
-            PostTags = request.TagIds.Select(tagId => new PostTag { TagId = tagId }).ToList()
+            ImageUrl = imageUrl, // Handle the image URL
+            PostTags = tagIdList.Select(tagId => new PostTag { TagId = tagId }).ToList()
         };
 
         _postRepository.AddPost(post);
     }
-
-    public void UpdatePost(PostUpdateRequest request)
+    public void UpdatePost(PostUpdateRequest request, string imageUrl = null)
     {
         var post = _postRepository.GetPostBySlug(CommandHelper.GenerateSlug(request.Title));
         if (post == null) throw new Exception("Post not found!");
 
+        // Parse TagIds from comma-separated string
+        var tagIdList = request.TagIds
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(int.Parse)
+                            .ToList();
+
         post.Title = request.Title;
         post.Content = request.Content;
         post.CategoryId = request.CategoryId;
-        post.PostTags = request.TagIds.Select(tagId => new PostTag { TagId = tagId, PostId = post.Id }).ToList();
+
+        if (!string.IsNullOrEmpty(imageUrl))
+        {
+            post.ImageUrl = imageUrl; // Update the image URL if provided
+        }
+
+        post.PostTags = tagIdList.Select(tagId => new PostTag { TagId = tagId, PostId = post.Id }).ToList();
 
         _postRepository.UpdatePost(post);
     }
@@ -155,6 +169,26 @@ public class PostService
                                 PublishedAt = post.PublishedAt,
                                 Slug = post.Slug,
                                 CategoryName = post.Category.Name,
+                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
+                                Comments = post.Comments.Select(c => new CommentResponse
+                                {
+                                    Content = c.Content,
+                                    Author = c.Author.Username
+                                }).ToList()
+                            }).ToList();
+    }
+
+    public IEnumerable<PostResponse> GetAllPosts()
+    {
+        return _postRepository.GetAllPosts()
+                            .Select(post => new PostResponse
+                            {
+                                Title = post.Title,
+                                Content = post.Content,
+                                PublishedAt = post.PublishedAt,
+                                Slug = post.Slug,
+                                CategoryName = post.Category.Name,
+                                ImageUrl = post.ImageUrl,
                                 Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
                                 Comments = post.Comments.Select(c => new CommentResponse
                                 {

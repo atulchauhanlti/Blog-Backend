@@ -5,6 +5,7 @@ using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 
 namespace backend.Controllers
 {
@@ -20,8 +21,8 @@ namespace backend.Controllers
         }
 
         [Authorize]
-        [HttpPost]
-        public IActionResult AddPost([FromBody] PostCreateRequest request)
+        [HttpPost("create")]
+        public IActionResult AddPost([FromForm] PostCreateRequest request, [FromForm] IFormFile imageFile)
         {
             var userIdClaim = User.FindFirst("UserId");
             if (userIdClaim == null)
@@ -29,16 +30,41 @@ namespace backend.Controllers
                 return Unauthorized("User ID is missing in the token.");
             }
 
-            var userId = int.Parse(userIdClaim.Value); 
-            _postService.AddPost(request, userId);
-            return Ok();
+            var userId = int.Parse(userIdClaim.Value);
+
+            string imageUrl = null;
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                // Save the image file to the server (e.g., in an "uploads" directory)
+                var filePath = Path.Combine("uploads", imageFile.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    imageFile.CopyTo(stream);
+                }
+                imageUrl = filePath; // Store the file path or convert it to a public URL if hosted
+            }
+
+            _postService.AddPost(request, userId, imageUrl);
+            return Ok("Post created successfully");
         }
 
         [Authorize]
-        [HttpPut("{slug}")]
-        public IActionResult UpdatePost(string slug, [FromBody] PostUpdateRequest request)
+        [HttpPut("update/{slug}")]
+        public IActionResult UpdatePost(string slug, [FromForm] PostUpdateRequest request, [FromForm] IFormFile imageFile)
         {
-            _postService.UpdatePost(request);
+            string imageUrl = null;
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                // Save the new image file
+                var filePath = Path.Combine("uploads", imageFile.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    imageFile.CopyTo(stream);
+                }
+                imageUrl = filePath; // Store the file path or convert it to a public URL
+            }
+
+            _postService.UpdatePost(request, imageUrl);
             return NoContent();
         }
 
@@ -83,6 +109,13 @@ namespace backend.Controllers
         {
             var post = _postService.GetPostBySlug(slug);
             return Ok(post);
+        }
+
+        [HttpGet("all")]
+        public IActionResult GetAllPosts()
+        {
+            var posts = _postService.GetAllPosts();
+            return Ok(posts);
         }
     }
 }

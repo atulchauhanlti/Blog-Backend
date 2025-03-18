@@ -33,6 +33,10 @@ public class Post
     [StringLength(150)]
     public string Slug { get; set; }
 
+    // Image URL or File Path
+    [StringLength(500)]
+    public string ImageUrl { get; set; } // This stores the image path or URL
+
     public ICollection<PostTag> PostTags { get; set; }
     public ICollection<Comment> Comments { get; set; }
 }

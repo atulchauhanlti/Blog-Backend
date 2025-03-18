@@ -11,6 +11,7 @@ public interface IPostRepository
     IEnumerable<Post> GetPostsByTag(int tagId);
     IEnumerable<Post> GetPostsByUser(int userId);
     IEnumerable<Post> SearchPosts(string query);
+    IEnumerable<Post> GetAllPosts();
     void AddPost(Post post);
     void UpdatePost(Post post);
     void DeletePost(int id);

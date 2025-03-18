@@ -12,4 +12,7 @@ public class PostResponse
     public string CategoryName { get; set; }
     public List<string> Tags { get; set; } // List of tag names
     public List<CommentResponse> Comments { get; set; }
+
+    // Add ImageUrl
+    public string ImageUrl { get; set; }
 }
