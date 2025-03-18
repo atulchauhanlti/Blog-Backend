@@ -1,3 +1,4 @@
+using System.IO;
 using backend.Data;
 using backend.Helpers;
 using backend.Interface;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +45,8 @@ builder.Services.AddScoped<TagService>();
 // Register Post-related services and repositories
 builder.Services.AddScoped<IPostRepository, PostRepository>(); // Post repository
 builder.Services.AddScoped<PostService>();    
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
@@ -96,6 +100,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+    RequestPath = "/uploads"
+});
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowReactApp");
@@ -103,6 +113,7 @@ app.UseCors("AllowReactApp");
 app.UseAuthentication(); // Enable Authentication Middleware
 app.UseAuthorization();  // Enable Authorization Middleware
 
+app.UseStaticFiles();
 app.MapControllers(); 
 
 app.Run();
