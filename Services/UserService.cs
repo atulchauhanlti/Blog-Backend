@@ -30,7 +30,6 @@ public class UserService : IUserService
 
    public User UpdateUser(string userId, UpdateUserRequest request)
     {
-        // Find the user in the database
         var user = _context.Users.FirstOrDefault(u => u.Id.ToString() == userId);
 
         if (user == null)
@@ -38,7 +37,6 @@ public class UserService : IUserService
             throw new KeyNotFoundException("User not found");
         }
 
-        // Update only the fields provided in the request
         if (!string.IsNullOrEmpty(request.Email))
         {
             user.Email = request.Email;
@@ -56,11 +54,9 @@ public class UserService : IUserService
 
         if (!string.IsNullOrEmpty(request.Password))
         {
-            // Hash the password before storing it
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
         }
 
-        // Save changes to the database
         _context.SaveChanges();
 
         return user;

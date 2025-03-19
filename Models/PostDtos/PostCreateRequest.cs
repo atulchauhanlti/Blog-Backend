@@ -17,5 +17,5 @@ public class PostCreateRequest
     public int CategoryId { get; set; }
 
     [Required]
-    public string TagIds { get; set; } // List of Tag IDs
+    public string TagIds { get; set; }
 }

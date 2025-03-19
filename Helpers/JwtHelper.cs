@@ -25,9 +25,9 @@ private readonly string _key;
             Subject = new ClaimsIdentity(new[] {
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role, user.Role),
-                new Claim("UserId", user.Id.ToString()),       // Adding user ID
-                new Claim("FirstName", user.FirstName),        // Adding first name
-                new Claim("LastName", user.LastName)           // Adding last name
+                new Claim("UserId", user.Id.ToString()),       
+                new Claim("FirstName", user.FirstName),        
+                new Claim("LastName", user.LastName)           
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

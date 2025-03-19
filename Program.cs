@@ -14,12 +14,11 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // React app's URL
+        policy.WithOrigins("http://localhost:3000") 
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -36,14 +35,13 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>(); 
 builder.Services.AddSingleton(new JwtHelper("ThisIsAReallyStrongSecretKey12345!")); 
 
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Add repository
-builder.Services.AddScoped<CategoryService>(); // Add service
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); 
+builder.Services.AddScoped<CategoryService>(); 
 
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<TagService>();
 
-// Register Post-related services and repositories
-builder.Services.AddScoped<IPostRepository, PostRepository>(); // Post repository
+builder.Services.AddScoped<IPostRepository, PostRepository>(); 
 builder.Services.AddScoped<PostService>();    
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -55,7 +53,7 @@ builder.Services.AddAuthentication("Bearer")
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                System.Text.Encoding.ASCII.GetBytes("ThisIsAReallyStrongSecretKey12345!")), // Use the same secret key
+                System.Text.Encoding.ASCII.GetBytes("ThisIsAReallyStrongSecretKey12345!")), 
             ValidateIssuer = false,
             ValidateAudience = false
         };

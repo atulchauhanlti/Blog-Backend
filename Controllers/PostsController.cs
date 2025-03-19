@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using System.Collections.Generic;
 
 namespace backend.Controllers
 {
@@ -14,10 +15,12 @@ namespace backend.Controllers
     public class PostsController : ControllerBase
     {
         private readonly PostService _postService;
+        private readonly CategoryService _categoryService;
 
-        public PostsController(PostService postService)
+        public PostsController(PostService postService, CategoryService categoryService)
         {
             _postService = postService;
+            _categoryService = categoryService;
         }
 
         [Authorize]
@@ -35,13 +38,12 @@ namespace backend.Controllers
             string imageUrl = null;
             if (imageFile != null && imageFile.Length > 0)
             {
-                // Save the image file to the server (e.g., in an "uploads" directory)
                 var filePath = Path.Combine("uploads", imageFile.FileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     imageFile.CopyTo(stream);
                 }
-                imageUrl = filePath; // Store the file path or convert it to a public URL if hosted
+                imageUrl = filePath; 
             }
 
             _postService.AddPost(request, userId, imageUrl);
@@ -56,16 +58,15 @@ namespace backend.Controllers
 
             if (imageFile != null && imageFile.Length > 0)
             {
-                // Save the new image file
                 var filePath = Path.Combine("uploads", imageFile.FileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     imageFile.CopyTo(stream);
                 }
-                imageUrl = filePath; // Store the file path or convert it to a public URL
+                imageUrl = filePath; 
             }
 
-            _postService.UpdatePost(id, request, imageUrl); // Pass id, request, and image URL to service layer
+            _postService.UpdatePost(id, request, imageUrl);
             return NoContent();
         }
 
@@ -79,12 +80,26 @@ namespace backend.Controllers
         }
 
 
-        [HttpGet("category/{categoryId}")]
-        public IActionResult GetPostsByCategory(int categoryId)
+       [HttpGet("category/{categoryName}")]
+        public IActionResult GetPostsByCategory(string categoryName)
         {
+            var category = _categoryService.GetCategoryByName(categoryName);
+            if (category == null)
+            {
+                return NotFound(); 
+            }
+
+            int categoryId = category.Id;
             var posts = _postService.GetPostsByCategory(categoryId);
+
+            if (posts == null || !posts.Any())
+            {
+                return Ok(new List<PostResponse>());
+            }
+
             return Ok(posts);
         }
+
 
         [HttpGet("tag/{tagId}")]
         public IActionResult GetPostsByTag(int tagId)
@@ -107,13 +122,6 @@ namespace backend.Controllers
             return Ok(posts);
         }
 
-        // [HttpGet("{slug}")]
-        // public IActionResult GetPostBySlug(string slug)
-        // {
-        //     var post = _postService.GetPostBySlug(slug);
-        //     return Ok(post);
-        // }
-
         [HttpGet("{id}")]
         public IActionResult GetPostById(int id)
         {
@@ -124,7 +132,7 @@ namespace backend.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(new { Message = ex.Message }); // Return a 404 with an error message
+                return NotFound(new { Message = ex.Message }); 
             }
         }
 

@@ -20,7 +20,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configure many-to-many relationship between Post and Tag
         modelBuilder.Entity<PostTag>()
             .HasKey(pt => new { pt.PostId, pt.TagId });
 

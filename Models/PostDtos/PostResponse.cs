@@ -11,9 +11,7 @@ public class PostResponse
     public DateTime PublishedAt { get; set; }
     public string Slug { get; set; }
     public string CategoryName { get; set; }
-    public List<string> Tags { get; set; } // List of tag names
+    public List<string> Tags { get; set; } 
     public List<CommentResponse> Comments { get; set; }
-
-    // Add ImageUrl
     public string ImageUrl { get; set; }
 }

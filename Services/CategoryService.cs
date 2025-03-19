@@ -24,21 +24,23 @@ public class CategoryService
         return _categoryRepository.GetCategoryById(id);
     }
 
+    public Category GetCategoryByName(string name)
+    {
+        return _categoryRepository.GetCategoryByName(name);
+    }
+
     public void AddCategory(Category category)
     {
-        // Add any additional validation or business logic here
         _categoryRepository.AddCategory(category);
     }
 
     public void UpdateCategory(Category category)
     {
-        // Additional logic like checking if the category exists
         _categoryRepository.UpdateCategory(category);
     }
 
     public void DeleteCategory(int id)
     {
-        // Additional logic before deletion
         _categoryRepository.DeleteCategory(id);
     }
 }

@@ -17,14 +17,23 @@ namespace backend.Controllers
             _categoryService = categoryService;
         }
 
-        // GET: api/categories
         [HttpGet]
         public IEnumerable<Category> GetCategories()
         {
             return _categoryService.GetAllCategories();
         }
 
-        // GET: api/categories/{id}
+        [HttpGet("name/{name}")]
+        public ActionResult<int> GetCategoryIdByName(string name)
+        {
+            var category = _categoryService.GetCategoryByName(name);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return category.Id;
+        }
+
         [HttpGet("{id}")]
         public ActionResult<Category> GetCategoryById(int id)
         {
@@ -36,7 +45,6 @@ namespace backend.Controllers
             return category;
         }
 
-        // POST: api/categories
         [HttpPost]
         public IActionResult AddCategory([FromBody] Category category)
         {
@@ -45,28 +53,25 @@ namespace backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            _categoryService.AddCategory(category); // Call the service layer
+            _categoryService.AddCategory(category); 
             return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
         }
 
-        // PUT: api/categories/{id}
        [HttpPut("{id}")]
         public IActionResult UpdateCategory(int id, [FromBody] Category category)
         {
-            var existingCategory = _categoryService.GetCategoryById(id); // This is already tracked by DbContext
+            var existingCategory = _categoryService.GetCategoryById(id); 
             if (existingCategory == null)
             {
                 return NotFound();
             }
 
-            // Update the tracked instance with new values
             existingCategory.Name = category.Name;
 
             _categoryService.UpdateCategory(existingCategory);
             return NoContent();
         }
 
-        // DELETE: api/categories/{id}
         [HttpDelete("{id}")]
         public IActionResult DeleteCategory(int id)
         {

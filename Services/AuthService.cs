@@ -21,10 +21,8 @@ public class AuthService
 
     public AuthResponse Register(RegistrationRequest request)
     {
-        // Hash the password
         var hashedPassword = HashPassword(request.Password);
 
-        // Create the User object
         var user = new User
         {
             Username = request.Username,
@@ -32,13 +30,11 @@ public class AuthService
             FirstName = request.FirstName,
             LastName = request.LastName,
             PasswordHash = hashedPassword,
-            Role = "User" // Default role
+            Role = "User"
         };
 
-        // Save user to the database
         _userRepository.Add(user);
 
-        // Generate token
         var token = _jwtHelper.GenerateToken(user);
 
         return new AuthResponse
@@ -51,7 +47,6 @@ public class AuthService
 
     public AuthResponse Login(string usernameOrEmail, string password)
     {
-        // Fetch the user by Username or Email
         var user = _userRepository.GetByUsernameOrEmail(usernameOrEmail);
 
         if (user == null || !VerifyPassword(password, user.PasswordHash))
@@ -59,7 +54,6 @@ public class AuthService
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
-        // Generate token
         var token = _jwtHelper.GenerateToken(user);
 
         return new AuthResponse
@@ -72,7 +66,6 @@ public class AuthService
 
     private string HashPassword(string password)
     {
-        // Use SHA256 for hashing (or a stronger algorithm like bcrypt for production)
         using var sha256 = SHA256.Create();
         var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
         return Convert.ToBase64String(bytes);

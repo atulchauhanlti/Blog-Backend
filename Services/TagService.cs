@@ -26,19 +26,16 @@ public class TagService
 
     public void AddTag(Tag tag)
     {
-        // Add any additional validation or logic here
         _tagRepository.AddTag(tag);
     }
 
     public void UpdateTag(Tag tag)
     {
-        // Additional logic like ensuring the tag exists
         _tagRepository.UpdateTag(tag);
     }
 
     public void DeleteTag(int id)
     {
-        // Add any pre-deletion logic here
         _tagRepository.DeleteTag(id);
     }
 }

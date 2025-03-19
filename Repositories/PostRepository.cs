@@ -29,8 +29,8 @@ public class PostRepository : IPostRepository
     public IEnumerable<Post> GetPostsByCategory(int categoryId)
     {
         return _context.Posts
-                       .Where(p => p.CategoryId == categoryId)
-                       .ToList();
+                    .Where(p => p.CategoryId == categoryId)
+                    .ToList() ?? new List<Post>();
     }
 
     public IEnumerable<Post> GetPostsByTag(int tagId)
@@ -76,7 +76,6 @@ public class PostRepository : IPostRepository
         if (post == null)
         {
             Console.WriteLine($"Post with ID {id} not found.");
-            // Optionally log the error or return null (current behavior).
         }
         return post;
     }

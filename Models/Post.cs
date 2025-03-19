@@ -28,14 +28,12 @@ public class Post
 
     public Category Category { get; set; }
 
-    // Add a unique slug for frontend references
     [Required]
     [StringLength(150)]
     public string Slug { get; set; }
 
-    // Image URL or File Path
     [StringLength(500)]
-    public string ImageUrl { get; set; } // This stores the image path or URL
+    public string ImageUrl { get; set; } 
 
     public ICollection<PostTag> PostTags { get; set; }
     public ICollection<Comment> Comments { get; set; }

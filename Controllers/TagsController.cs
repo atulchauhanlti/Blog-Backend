@@ -17,14 +17,12 @@ namespace backend.Controllers
             _tagService = tagService;
         }
 
-        // GET: api/tags
         [HttpGet]
         public IEnumerable<Tag> GetTags()
         {
             return _tagService.GetAllTags();
         }
 
-        // GET: api/tags/{id}
         [HttpGet("{id}")]
         public ActionResult<Tag> GetTagById(int id)
         {
@@ -36,7 +34,6 @@ namespace backend.Controllers
             return tag;
         }
 
-        // POST: api/tags
         [HttpPost]
         public IActionResult AddTag([FromBody] Tag tag)
         {
@@ -49,7 +46,6 @@ namespace backend.Controllers
             return CreatedAtAction(nameof(GetTagById), new { id = tag.Id }, tag);
         }
 
-        // PUT: api/tags/{id}
         [HttpPut("{id}")]
         public IActionResult UpdateTag(int id, [FromBody] Tag tag)
         {
@@ -68,7 +64,6 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        // DELETE: api/tags/{id}
         [HttpDelete("{id}")]
         public IActionResult DeleteTag(int id)
         {

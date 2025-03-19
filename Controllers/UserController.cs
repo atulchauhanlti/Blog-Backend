@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-    [Authorize] // Require authorization
+    [Authorize] 
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -21,7 +21,6 @@ namespace backend.Controllers
             _userService = userService;
         }
 
-        // GET: api/User/Profile
         [HttpGet("profile")]
         public IActionResult GetUserProfile()
         {
@@ -39,10 +38,9 @@ namespace backend.Controllers
                 return NotFound(new { message = "User not found" });
             }
 
-            return Ok(user); // Return user profile
+            return Ok(user);
         }
 
-        // PUT: api/User/Update
         [HttpPut("update")]
         public IActionResult UpdateUser([FromBody] UpdateUserRequest request)
         {
@@ -57,7 +55,7 @@ namespace backend.Controllers
             try
             {
                 var updatedUser = _userService.UpdateUser(userId, request);
-                return Ok(updatedUser); // Return updated user profile
+                return Ok(updatedUser); 
             }
             catch (KeyNotFoundException)
             {

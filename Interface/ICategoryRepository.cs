@@ -8,6 +8,8 @@ public interface ICategoryRepository
 {
     IEnumerable<Category> GetAllCategories();
     Category GetCategoryById(int id);
+
+    Category GetCategoryByName(string name);
     void AddCategory(Category category);
     void UpdateCategory(Category category);
     void DeleteCategory(int id);

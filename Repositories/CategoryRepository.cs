@@ -27,6 +27,11 @@ public class CategoryRepository : ICategoryRepository
         return _context.Categories.AsNoTracking().FirstOrDefault(c => c.Id == id);
     }
 
+    public Category GetCategoryByName(string name)
+    {
+        return _context.Categories.FirstOrDefault(c => c.Name == name);
+    }
+
     public void AddCategory(Category category)
     {
         _context.Categories.Add(category);

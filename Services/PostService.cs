@@ -23,20 +23,14 @@ public class PostService
 
     public void AddPost(PostCreateRequest request, int userId, string imageUrl)
     {
-        // Validate CategoryId
         var category = _categoryRepository.GetCategoryById(request.CategoryId);
         if (category == null) throw new Exception("Category does not exist.");
 
-        // Parse TagIds from comma-separated string
         var tagIdList = request.TagIds
                             .Split(',', StringSplitOptions.RemoveEmptyEntries)
                             .Select(int.Parse)
                             .ToList();
 
-        // Validate TagIds (Optional: Check if these tag IDs exist in the database)
-        // var tags = _tagRepository.GetTagsByIds(tagIdList);
-
-        // Create the Post
         var post = new Post
         {
             Title = request.Title,
@@ -45,7 +39,7 @@ public class PostService
             UserId = userId,
             CategoryId = request.CategoryId,
             Slug = CommandHelper.GenerateSlug(request.Title),
-            ImageUrl = imageUrl, // Handle the image URL
+            ImageUrl = imageUrl, 
             PostTags = tagIdList.Select(tagId => new PostTag { TagId = tagId }).ToList()
         };
 
@@ -53,30 +47,25 @@ public class PostService
     }
     public void UpdatePost(int id, PostUpdateRequest request, string imageUrl = null)
     {
-        // Retrieve the post by its id
-        var post = _postRepository.GetPostById(id); // Use the id to fetch the post
+        var post = _postRepository.GetPostById(id); 
         if (post == null) throw new Exception("Post not found!");
 
-        // Parse TagIds from a comma-separated string in the request
         var tagIdList = request.TagIds
                             .Split(',', StringSplitOptions.RemoveEmptyEntries)
                             .Select(int.Parse)
                             .ToList();
 
-        // Update post fields
         post.Title = request.Title;
         post.Content = request.Content;
         post.CategoryId = request.CategoryId;
 
         if (!string.IsNullOrEmpty(imageUrl))
         {
-            post.ImageUrl = imageUrl; // Update image URL if a new image is provided
+            post.ImageUrl = imageUrl; 
         }
 
-        // Update post tags
         post.PostTags = tagIdList.Select(tagId => new PostTag { TagId = tagId, PostId = post.Id }).ToList();
 
-        // Save the changes via the repository
         _postRepository.UpdatePost(post);
     }
     public void DeletePost(int id)
@@ -88,19 +77,21 @@ public class PostService
     {
         return _postRepository.GetPostsByCategory(categoryId)
                               .Select(post => new PostResponse
-                              {
-                                  Title = post.Title,
-                                  Content = post.Content,
-                                  PublishedAt = post.PublishedAt,
-                                  Slug = post.Slug,
-                                  CategoryName = post.Category.Name,
-                                  Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
-                                  Comments = post.Comments.Select(c => new CommentResponse
-                                  {
-                                      Content = c.Content,
-                                      Author = c.Author.Username
-                                  }).ToList()
-                              }).ToList();
+                                {
+                                    Id = post.Id,
+                                    Title = post.Title,
+                                    Content = post.Content,
+                                    PublishedAt = post.PublishedAt,
+                                    Slug = post.Slug,
+                                    ImageUrl = post.ImageUrl,
+                                    CategoryName = post.Category?.Name ?? "Unknown",
+                                    Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>(),
+                                    Comments = post.Comments?.Select(c => new CommentResponse
+                                    {
+                                        Content = c.Content,
+                                        Author = c.Author?.Username ?? "Anonymous"
+                                    }).ToList() ?? new List<CommentResponse>()
+                                });
     }
 
     public PostResponse GetPostBySlug(string slug)
@@ -139,13 +130,13 @@ public class PostService
             Content = post.Content,
             PublishedAt = post.PublishedAt,
             Slug = post.Slug,
-            CategoryName = post.Category?.Name, // Handle null Category
-            Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>(), // Handle null Tags
+            CategoryName = post.Category?.Name, 
+            Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>(),
             Comments = post.Comments?.Select(c => new CommentResponse
             {
                 Content = c.Content,
-                Author = c.Author?.Username // Handle null Author
-            }).ToList() ?? new List<CommentResponse>() // Handle null Comments
+                Author = c.Author?.Username 
+            }).ToList() ?? new List<CommentResponse>() 
         };
     }
 
