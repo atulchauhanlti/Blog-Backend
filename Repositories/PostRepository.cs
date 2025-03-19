@@ -95,4 +95,10 @@ public class PostRepository : IPostRepository
             _context.SaveChanges();
         }
     }
+
+    public void AddComment(Comment comment)
+    {
+        _context.Comments.Add(comment);
+        _context.SaveChanges();
+    }
 }

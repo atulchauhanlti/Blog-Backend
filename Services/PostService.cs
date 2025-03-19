@@ -85,12 +85,7 @@ public class PostService
                                     Slug = post.Slug,
                                     ImageUrl = post.ImageUrl,
                                     CategoryName = post.Category?.Name ?? "Unknown",
-                                    Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>(),
-                                    Comments = post.Comments?.Select(c => new CommentResponse
-                                    {
-                                        Content = c.Content,
-                                        Author = c.Author?.Username ?? "Anonymous"
-                                    }).ToList() ?? new List<CommentResponse>()
+                                    Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>()
                                 });
     }
 
@@ -101,17 +96,20 @@ public class PostService
 
         return new PostResponse
         {
+            Id = post.Id,
             Title = post.Title,
             Content = post.Content,
             PublishedAt = post.PublishedAt,
             Slug = post.Slug,
+            ImageUrl = post.ImageUrl,
             CategoryName = post.Category.Name,
             Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
-            Comments = post.Comments.Select(c => new CommentResponse
+            Comments = post.Comments?.Select(c => new CommentResponse
             {
+                Author = c.Name,
                 Content = c.Content,
-                Author = c.Author.Username
-            }).ToList()
+                CommentedAt = c.CommentedAt
+            }).ToList() ?? new List<CommentResponse>()
         };
     }
 
@@ -130,13 +128,9 @@ public class PostService
             Content = post.Content,
             PublishedAt = post.PublishedAt,
             Slug = post.Slug,
+            ImageUrl = post.ImageUrl,
             CategoryName = post.Category?.Name, 
-            Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>(),
-            Comments = post.Comments?.Select(c => new CommentResponse
-            {
-                Content = c.Content,
-                Author = c.Author?.Username 
-            }).ToList() ?? new List<CommentResponse>() 
+            Tags = post.PostTags?.Select(pt => pt.Tag?.Name).ToList() ?? new List<string>()
         };
     }
 
@@ -145,17 +139,14 @@ public class PostService
         return _postRepository.GetPostsByTag(tagId)
                             .Select(post => new PostResponse
                             {
+                                Id = post.Id,
                                 Title = post.Title,
                                 Content = post.Content,
                                 PublishedAt = post.PublishedAt,
                                 Slug = post.Slug,
+                                ImageUrl = post.ImageUrl,
                                 CategoryName = post.Category.Name,
-                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
-                                Comments = post.Comments.Select(c => new CommentResponse
-                                {
-                                    Content = c.Content,
-                                    Author = c.Author.Username
-                                }).ToList()
+                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList()
                             }).ToList();
     }
 
@@ -164,18 +155,36 @@ public class PostService
         return _postRepository.GetPostsByUser(userId)
                             .Select(post => new PostResponse
                             {
+                                Id = post.Id,
                                 Title = post.Title,
                                 Content = post.Content,
                                 PublishedAt = post.PublishedAt,
                                 Slug = post.Slug,
+                                ImageUrl = post.ImageUrl,
                                 CategoryName = post.Category.Name,
-                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
-                                Comments = post.Comments.Select(c => new CommentResponse
-                                {
-                                    Content = c.Content,
-                                    Author = c.Author.Username
-                                }).ToList()
+                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList()
                             }).ToList();
+    }
+
+   public void AddCommentOnPost(int postId, string name, string email, string content)
+    {
+        var post = _postRepository.GetPostById(postId);
+
+        if (post == null)
+        {
+            throw new ArgumentException("Post not found");
+        }
+
+        var comment = new Comment
+        {
+            Name = name,
+            Email = email,
+            Content = content,
+            CommentedAt = DateTime.Now,
+            PostId = postId
+        };
+
+        _postRepository.AddComment(comment);
     }
 
     public IEnumerable<PostResponse> SearchPosts(string query)
@@ -188,12 +197,7 @@ public class PostService
                                 PublishedAt = post.PublishedAt,
                                 Slug = post.Slug,
                                 CategoryName = post.Category.Name,
-                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
-                                Comments = post.Comments.Select(c => new CommentResponse
-                                {
-                                    Content = c.Content,
-                                    Author = c.Author.Username
-                                }).ToList()
+                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList()
                             }).ToList();
     }
 
@@ -209,12 +213,7 @@ public class PostService
                                 Slug = post.Slug,
                                 CategoryName = post.Category.Name,
                                 ImageUrl = post.ImageUrl,
-                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList(),
-                                Comments = post.Comments.Select(c => new CommentResponse
-                                {
-                                    Content = c.Content,
-                                    Author = c.Author.Username
-                                }).ToList()
+                                Tags = post.PostTags.Select(pt => pt.Tag.Name).ToList()
                             }).ToList();
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Collections.Generic;
+using backend.Models;
 
 namespace backend.Controllers
 {
@@ -136,11 +137,43 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("slug/{slug}")]
+        public IActionResult GetPostBySlug(string slug)
+        {
+            try
+            {
+                var post = _postService.GetPostBySlug(slug);
+                return Ok(post);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { Message = ex.Message }); 
+            }
+        }
+
         [HttpGet("all")]
         public IActionResult GetAllPosts()
         {
             var posts = _postService.GetAllPosts();
             return Ok(posts);
+        }
+    
+        [HttpPost("{postId}/comments")]
+        public IActionResult AddCommentOnPost(int postId, [FromBody] AddCommentRequest request)
+        {
+            try
+            {
+                _postService.AddCommentOnPost(postId, request.Name, request.Email, request.Content);
+                return Ok(new { Message = "Comment added successfully" });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
+            }
         }
     }
 }
